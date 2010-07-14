@@ -1,0 +1,93 @@
+Class: HistoryManager {#Ext.ux.HistoryManager}
+==========================================
+<big>This class is meant to function as a domain observer. It uses the browser-hash (via HashListener) to monitor and save the domain-state (enabling bookmarks and back/forward button functionality). 
+The class acts as a parameter stack, to monitor and modify the state of an application. Whenever a parameter withing the stack changes state, the class notifies its followers of the change.</big>
+
+HistoryManager Method: constructor {#Ext.ux.HistoryManager:constructor}
+----------------------------------
+### Example:
+
+	var HM = new Ext.ux.HistoryManager(options);
+
+### Arguments:
+
+1. options - (`object`: optional) See below:
+
+### Options:
+
+* blank_page - (`string`: defaults to `blank.html`) an alternative path to the blank.html file. 
+* start - (`bool`: defaults to `false`) whether to start the listener on construction
+* delimiter - (`string`: defaults no '') a beginning delimiter to add to the hash, to support the new Google AJAX syntax (#!)
+* serializeHash - `string function (aHash)` (_Optional_, use with `deserializeHash`) A callback function which serializes a Hash
+* deserializeHash - `Hash function (aString)` (_Optional_, use with `serializeHash`) A callback function which deserializes a String to a Hash
+
+### Delimiter Usage:
+	var HM = new HistoryManager({delimiter:'!'}); //will add support for the google syntax
+
+### Custom (de)serializer Usage:
+	// *TBD*
+
+HistoryManager Method: Set {#Ext.ux.HistoryManager:set}
+---------------------------
+<big>Used to set a state for the domain. Will set a key's value in the state.</big>
+
+### Example:
+
+	HM.set(key, value);
+
+### Arguments:
+
+1. key - (`string`) A key identifier
+2. elements - (`mixed`) whatever value you want to set to that key (must be JSON encodable)
+
+A note about set. Because of the way the hash is analyzed, changing the order of the inner members of a value will cuase a state-change event. 
+This is because i'm convering the objects to JSON instead of parsing them to save speed.
+If you do not controll the order of the values in your objects, make sure you check this manuly.
+An Example for this:
+
+	HM.set('my-key', {a:'a',b:'b'});
+	HM.set('my-key', {b:'b',a:'a'}); //will fire someValue-changed although values aren't actualy modified. 
+
+HistoryManager Method: Remove {#HistoryManager:remove}
+-----------------------------
+<big>Used to remove a state from the domain. Will remove `key` and its value from the state.</big>
+
+### Example:
+
+	HM.remove('my-key');
+
+### Arguments:
+
+1. key - (`string`) A key identifier
+
+HistoryManager Method: Start {#Ext.ux.HistoryManager:start}
+----------------------------
+<big>Will start the listener. This will enable the various events attached to the class.</big>
+
+### Example:
+
+	HM.start();
+
+HistoryManager Method: Stop {#Ext.ux.HistoryManager:stop}
+---------------------------
+<big>Will stop the event listener. When down, no events will be fired</big>
+
+### JavaScript:
+
+	HM.stop();
+	
+HistoryManaget: Events {#Ext.ux.HistoryManager:Events}
+-------
+<big>The class is event-based, but doesn't have prefixed events. The events change according to the key being observed. 
+The names point to one of 3 states a value might be in: Added, Changed and Removed.</big>
+<small>'#' is the name of the key beeing observed</small>
+
+  * '#-added' : will be fired when an unset key is given a value. will pass the new value as parameter.
+  * '#-updated' : will be fired when a current key's value was changed. will pass the new value as parameter.
+  * '#-removed' : will be fired when a key has been removed from the state. will pas the key's last value as parameter.
+  * '#-changed' : will fire when any a key is added/updated. will pass the new value as parameter. *NOTE: this will fire alongside the add/updated events*
+  
+HistoryManager: Example {#HistoryManager:Example}
+--------
+
+	// *TBD*

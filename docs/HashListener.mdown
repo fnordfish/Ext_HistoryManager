@@ -1,0 +1,50 @@
+Class: HashListener {#Ext.ux.HashListener}
+==========================================
+A Class that provides a cross-browser history-management functionality, using the browser hash to store the application's state
+
+HashListener Method: constructor {#Ext.ux.HashListener:constructor}
+---------------------------------
+### Example:
+
+	var HL = new Ext.ux.HashListener(options);
+
+### Arguments:
+
+1. options - (`object`: optional) See below:
+
+### Options:
+
+* blank_page - (`string`: defaults to `blank.html`) an alternative path to the blank.html file. 
+* start - (`bool`: defaults to `false`) whether to start the listener on construction
+
+HashListener Method: updateHash {#Ext.ux.HashListener:updateHash}
+--------------------------------
+### Example:
+
+	HL.updateHash(value);
+	
+### Arguments:
+
+1. value - (`string`) a new value for the browser hash
+
+HistoryManager Method: Start {#Ext.ux.HashListener:start}
+----------------------------
+<big>Will start the listener. This will enable the `hashChanged` event to fire.</big>
+
+### Example:
+
+	HM.start();
+
+HistoryManager Method: Stop {#Ext.ux.HashListener:stop}
+---------------------------
+<big>Will stop the event listener. When down, no events will be fired.</big>
+
+### JavaScript:
+
+	HM.stop();
+
+
+HashListener: Events {#Ext.ux.HashListener:Events}
+--------
+  * `hashChanged` - will be fired whenever the hash was changed - whether by method or by browser behaviour. will pass the new hash value as parameter 
+  * `started` - will be fired after {Ext.ux.HashListener:start()} was called

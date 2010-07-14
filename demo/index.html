@@ -1,0 +1,58 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+	<title></title>
+	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/>
+	
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/ext-core/3.1.0/ext-core.js"></script>
+	<script src="../history_manager_aio-min.js" type="text/javascript" charset="utf-8"></script>
+	
+	
+	<!--
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/ext-core/3.1.0/ext-core-debug.js"></script>
+	<script src="../lib/jshashtable.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../src/hash_listener.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../src/history_manager.js" type="text/javascript" charset="utf-8"></script>
+	-->
+	
+	<script type="text/javascript" charset="utf-8">
+	//<![CDATA[<!--
+
+			var hm = new Ext.ux.HistoryManager({delimiter: '!'});
+			
+			hm.addListener('hashChanged', function (h)
+			{
+				console.log('hashChanged', h, typeof h);
+			});
+			hm.addListener('page-changed', function (val)
+			{
+				console.log('page changed to ', val);
+			});
+			hm.addListener('page-added', function (val)
+			{
+				console.log('page added to ', val);
+			});
+			hm.addListener('page-removed', function ()
+			{
+				console.log('page was removed');
+			});
+			
+			// start the manager after all listeners has been registrated
+			hm.start();
+	//]]> -->
+	</script>
+	
+</head>
+<body>
+	<ul id="myul">
+		<li><a href="#" onclick="hm.set('page', 1); return false;">page 1</a></li>
+		<li><a href="#" onclick="hm.set('page', 2); return false;">page 2</a></li>
+		<li><a href="#" onclick="hm.set('page', ['foo', 2]); return false;">page ['foo', 2]</a></li>
+		<li><a href="#" onclick="hm.remove('page', 1); return false;">remove page</a></li>
+		
+		<li><a href="#" onclick="hm.set('page_2', 1); return false;">page_2 1</a></li>
+		<li><a href="#" onclick="hm.set('page_2', 2); return false;">page_2 2</a></li>
+		<li><a href="#" onclick="hm.remove('page_2', 1); return false;">remove page_2</a></li>
+	</ul>
+</body>
+</html>
