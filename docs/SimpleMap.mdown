@@ -1,6 +1,7 @@
-Class: SimpleMap {#Ext.ux.HashListener::SimpleMap}
+Class: SimpleMap {#Ext.ux.HistoryManager.SimpleMap}
 ==========================================
-A Class that provides a simple Object Map avoiding trouble with reserved key names
+A Class that provides a simple Object Map avoiding trouble with reserved key names.
+
 
 SimpleMap Method: constructor {#SimpleMap:constructor}
 ---------------------------------

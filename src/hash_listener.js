@@ -20,6 +20,7 @@ provides: [Ext.ux.HashListener]
 ...
 */
 Ext.ns('Ext.ux');
+
 Ext.ux.HashListener = Ext.extend(Ext.util.Observable, {
 	
 	options : {
