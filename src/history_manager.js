@@ -13,7 +13,7 @@ authors:
 requires:
 - Ext.ux.HashListener
 
-provides: [Ext.ux.HistoryManager, Ext.ux.SimpleMap]
+provides: [Ext.ux.HistoryManager, Ext.ux.HistoryManager.SimpleMap]
 
 ...
 */
