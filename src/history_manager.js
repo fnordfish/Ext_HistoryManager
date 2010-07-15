@@ -13,117 +13,119 @@ authors:
 requires:
 - Ext.ux.HashListener
 
-provides: [Ext.ux.HistoryManager, Ext.ux.HistoryManager.SimpleMap]
+provides: [Ext.ux.HistoryManager, Ext.ux.SimpleMap]
 
 ...
 */
 Ext.ns('Ext.ux');
 
-Ext.ux.HistoryManager = (function () {
+Ext.ux.HistoryManager = (function (){
 	
 	/*
 	 * A simple Object-Map, which does not soffer from reserved key-names
+	 * 
+	 * thanks for no working way of extending an Object or Function
 	 */
-	var SimpleMap = Ext.extend(Object, (function (){
+	var SimpleMap = function (obj, opts) {
+		this.values = {};
+		this.numEntries = 0;
 
-		var values = {};
-		var length = 0;
+		this.options = {
+			prefix: '$___'
+		};
 
-		// we need to prefix each value, we want to store, to avoid collitions with prototypal values ob `Object` 
-		var prefix = '$___';
-		var prefixLength = prefix.length;
-
-		function prefixKey(key)
+		if (obj && 'object' == typeof obj)
 		{
-			return prefix + key;
+			for (k in obj) if (obj.hasOwnProperty(k))
+			{
+				this.put(k, obj[k]);
+			}
 		}
 
-		function unPrefixKey(key)
+		if (opts)
 		{
-			if (0 === key.indexOf(prefix))
+			Ext.apply(this.options, opts);
+		}
+
+		this.prefixLength = this.options.prefix.length;
+
+		this.prefixKey = function (key)
+		{
+			return this.options.prefix + key;
+		},
+
+		this.unPrefixKey = function (key)
+		{
+			if (0 === key.indexOf(this.options.prefix))
 			{
-				return key.substr(prefixLength);
+				return key.substr(this.prefixLength);
 			}
 			return false;
 		}
 
-		return {
 
-			constructor: function (obj)
-			{
-				if (obj && 'object' == typeof obj)
-				{
-					for (k in obj) if (obj.hasOwnProperty(k))
-					{
-						this.put(k, obj[k])
-					}
-				}
-			},
+		this.put = function (key, value)
+		{
+			var oldValue = this.get(key);
+			this.values[ this.prefixKey(key) ] = value;
+			++this.numEntries;
+			return oldValue;
+		};
 
-			put: function (key, value)
-			{
-				var oldValue = this.get(key);
-				values[ prefixKey(key) ] = value;
-				++length;
-				return oldValue;
-			},
+		this.get = function (key)
+		{
+			return this.values[ this.prefixKey(key) ];
+		};
 
-			get: function (key)
-			{
-				return values[ prefixKey(key) ];
-			},
+		this.remove = function (key)
+		{
+			var k = this.prefixKey(key);
+			var v;
 
-			remove: function (key)
+			if (this.values.hasOwnProperty(k))
 			{
-				var k = prefixKey(key);
-				var v;
+				v = this.values[k];
+				delete this.values[k];
+				--this.numEntries;
+			}
 
-				if (values.hasOwnProperty(k))
-				{
-					v = values[k];
-					delete values[k];
-					--length;
-				}
+			return v;
+		};
 
-				return v;
-			},
-			
-			clear: function ()
-			{
-				values = {};
-				length = 0;
-			},
+		this.clear = function ()
+		{
+			this.values = {};
+			this.numEntries = 0;
+		};
 
-			containsKey: function (key)
-			{
-				return values.hasOwnProperty(prefixKey(key));
-			},
+		this.containsKey = function (key)
+		{
+			return this.values.hasOwnProperty(this.prefixKey(key));
+		};
 
-			isEmpty: function ()
-			{
-				return (length === 0);
-			},
+		this.isEmpty = function ()
+		{
+			return (this.numEntries === 0);
+		};
 
-			each: function (callback)
+		this.each = function (callback)
+		{
+			for (k in this.values) if (this.values.hasOwnProperty(k))
 			{
-				for (k in values) if (values.hasOwnProperty(k))
-				{
-					callback(unPrefixKey(k), values[k]);
-				}
-				return this;
-			},
-			
-			clone: function ()
-			{
-				var newMap = new SimpleMap();
-				this.each(newMap.put);
-				return newMap;
+				callback(this.unPrefixKey(k), this.values[k]);
 			}
 		};
 
-	})());
-	Ext.apply(SimpleMap, new Object());
-	
+		this.clone = function ()
+		{
+			var newMap = new SimpleMap();
+			for (k in this.values) if (this.values.hasOwnProperty(k))
+			{
+				newMap.put(this.unPrefixKey(k), this.values[k]);
+			}
+			return newMap;
+		};
+	};
 	
 	var HistoryManager = Ext.extend(Ext.ux.HashListener, {
 
@@ -132,11 +134,11 @@ Ext.ux.HistoryManager = (function () {
 			serializeHash: null,
 			deserializeHash: null
 		}, 
-	
+
 		state : new SimpleMap(),
 		stateCache : new SimpleMap(),
-	
-	
+
+
 		constructor: function (options)
 		{
 			Ext.ux.HistoryManager.superclass.constructor.call(this, options);
@@ -146,10 +148,10 @@ Ext.ux.HistoryManager = (function () {
 				this.serializeHash = this.options.serializeHash;
 				this.deserializeHash = this.options.deserializeHash;
 			}
-		
+
 			this.addListener('hashChanged', this.updateState, this);
 		},
-	
+
 
 		serializeHash : function (h)
 		{
@@ -161,7 +163,7 @@ Ext.ux.HistoryManager = (function () {
 			});
 			return Ext.urlEncode(o);
 		},
-	
+
 
 		deserializeHash : function (s)
 		{
@@ -173,23 +175,23 @@ Ext.ux.HistoryManager = (function () {
 			}
 			return h; 
 		},
-	
-	
+
+
 		updateState : function (hash)
 		{
 			var $this = this;
-		
+
 			if (this.options.delimiter)
 			{
 				hash = hash.substr(hash.indexOf(this.options.delimiter) + this.options.delimiter.length);
 			}
-		
+
 			hash = this.deserializeHash(hash);
 
 			this.state.each(function (key, value)
 			{
 				var nvalue, comperable, h_type, h_value;
-			
+
 				if (false === hash.containsKey(key))
 				{
 					nvalue = $this.state.get(key);
@@ -199,12 +201,12 @@ Ext.ux.HistoryManager = (function () {
 					hash.remove(key);
 					return;
 				}
-			
+
 				h_value = hash.get(key);
 				h_type = typeof h_value;
-			
+
 				comperable = (h_type=='string' || h_type=='number' || h_type =='boolean') ? h_value : Ext.encode(h_value);
-			
+
 				if (comperable != $this.stateCache.get(key))
 				{
 					nvalue = hash.get(key);
@@ -213,10 +215,10 @@ Ext.ux.HistoryManager = (function () {
 					$this.fireEvent(key+'-updated', nvalue);
 					$this.fireEvent(key+'-changed', nvalue);
 				}
-			
+
 				hash.remove(key);
 			});
-		
+
 			hash.each(function (key, value)
 			{
 				$this.state.put(key,value);
@@ -226,38 +228,36 @@ Ext.ux.HistoryManager = (function () {
 				$this.fireEvent(key+'-added', value);
 				$this.fireEvent(key+'-changed', value);
 			});
-		
+
 		},
-	
+
 		set : function (key, value)
 		{
 			var newState = this.state.clone();
-		
 			newState.put(key, value);
-		
 			this.updateHash(this.options.delimiter + this.serializeHash(newState));
-		
 			return this;
 		},
-	
+
 		hasKey : function (key)
 		{
 			return this.state.containsKey(key);
 		},
-	
+
 		remove : function (key)
 		{
 			var newState = this.state.clone();
-		
+			
 			newState.remove(key);
-		
+			
 			this.updateHash(this.options.delimiter + this.serializeHash(newState));
-		
+			
 			return this;
 		}
 	});
 	
 	HistoryManager.SimpleMap = SimpleMap;
-	
+
 	return HistoryManager;
 })();
+
