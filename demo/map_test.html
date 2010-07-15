@@ -1,0 +1,38 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head><title>blank</title></head>
+<body>
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/ext-core/3.1.0/ext-core.js"></script>
+	<script src="../src/hash_listener.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../src/history_manager.js" type="text/javascript" charset="utf-8"></script>
+
+	<script type="text/javascript" charset="utf-8">
+	//<![CDATA[<!--
+		console.log(Ext.ux.SimpleMap);
+		var map = new Ext.ux.HistoryManager.SimpleMap();
+		var hl = new Ext.ux.HashListener();
+		
+		hl.updateHash(Ext.urlEncode(map.values));
+		
+		map.put('a', 1);
+		hl.updateHash(Ext.urlEncode(map.values));
+		
+		map.put('each', 2);
+		hl.updateHash(Ext.urlEncode(map.values));
+		console.log(map.values);
+		
+		
+		var map2 = map.clone();
+		map2.put('c', 3);
+		map.remove('each');
+		hl.updateHash(Ext.urlEncode(map2.values));
+		console.log(map.values, map2.values);
+		
+		
+		var map3 = new Ext.ux.HistoryManager.SimpleMap();
+		map3.put('m3', 3); 
+		console.log(map.values, map2.values, map3.values);
+	//]]> -->
+	</script>
+</body>
+</html>
