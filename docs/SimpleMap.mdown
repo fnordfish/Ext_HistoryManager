@@ -1,0 +1,107 @@
+Class: SimpleMap {#Ext.ux.HashListener::SimpleMap}
+==========================================
+A Class that provides a simple Object Map avoiding trouble with reserved key names
+
+SimpleMap Method: constructor {#SimpleMap:constructor}
+---------------------------------
+### Example:
+
+	var map = new SimpleMap({'foo': 'bar'});
+
+### Arguments:
+
+1. obj - (`object`: optional) A initial `Object` to fill the map with. Note, that you have a bunch of reserved keys in an `Object`
+
+
+HashListener Method: put {#SimpleMap:put}
+--------------------------------
+<big>Sets the `value` associated with the `key`. If the map already contains the key, the old value is overwritten and the old value is returned.</big>
+
+### Example:
+
+	map.put(key, value);
+	
+### Arguments:
+
+1. key - (`string`) 
+2. value - (`Object`)
+
+
+HashListener Method: get {#SimpleMap:get}
+--------------------------------
+<big>Returns the `value` associated with the `key`.</big>
+
+### Example:
+
+	map.get(key);
+	
+### Arguments:
+
+1. key - (`string`) 
+
+
+HashListener Method: remove {#SimpleMap:remove}
+--------------------------------
+<big>Remove the `key` and its associated `value` from the map. If the key was set, the old value is returned.</big>
+
+### Example:
+
+	map.remove(key);
+	
+### Arguments:
+
+1. key - (`string`) 
+
+
+HashListener Method: clear {#SimpleMap:clear}
+--------------------------------
+<big>Removes all entries from the map.</big>
+
+### Example:
+
+	map.clear();
+	
+
+HashListener Method: containsKey {#SimpleMap:containsKey}
+--------------------------------
+<big>Whether the map contains the `key`. (Returns `true` even if the value of the key is `undefined` or `null`)</big>
+
+### Example:
+
+	map.containsKey(key);
+
+### Arguments:
+
+1. key - (`string`)
+
+
+HashListener Method: isEmpty {#SimpleMap:isEmpty}
+--------------------------------
+<big>Returns whether the map contains any entries.</big>
+
+### Example:
+
+	map.isEmpty();
+	
+HashListener Method: each {#SimpleMap:each}
+--------------------------------
+<big>Iterates over the entries in the map.</big>
+
+### Example:
+
+	map.each(function (key, value) {
+		console.log(key  + ' is mapped to ' + value);
+	});
+
+### Arguments:
+
+1. callback - (`Function`) A callback function wich will get the `key` as first and the `value` as second parameter
+
+HashListener Method: clone {#SimpleMap:clone}
+--------------------------------
+<big>Returns a new fresh copy of that map</big>
+
+### Example
+
+	var newMap = oldMap.clone();
+	
