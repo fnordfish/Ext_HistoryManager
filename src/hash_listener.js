@@ -25,6 +25,7 @@ Ext.ux.HashListener = Ext.extend(Ext.util.Observable, {
 	
 	options : {
 		blank_page : 'blank.html',
+		iframe_body_id: null,
 		start : false
 	},
 	
@@ -41,17 +42,21 @@ Ext.ux.HashListener = Ext.extend(Ext.util.Observable, {
 	constructor: function (options)
 	{
 		Ext.ux.HashListener.superclass.constructor.call(this, options);
+		Ext.apply(this.options, options);
+		
+		if (!this.options.iframe_body_id)
+		{
+			this.options.iframe_body_id = 'state' + (new Date()).getTime();
+		}
 		
 		// shortcut avoiding "this"-bindings
 		var $this = this;
-		
 		
 		// Disable Opera's fast back/forward navigation mode
 		if (Ext.isOpera && window.history.navigationMode)
 		{
 			window.history.navigationMode = 'compatible';
 		}
-
 		
 		// IE8 in IE7 mode defines window.onhashchange, but never fires it...
 		if (('onhashchange' in window) && (typeof(document.documentMode) == 'undefined' || document.documentMode > 7))
@@ -67,13 +72,13 @@ Ext.ux.HashListener = Ext.extend(Ext.util.Observable, {
 				$this.fireEvent('hashChanged', hash);
 			});
 		}
-		else  
+		else
 		{
 			if (this.useIframe)
 			{
 				this.initializeHistoryIframe();
-			} 
-        } 
+			}
+		}
 		
 		Ext.EventManager.on(window, 'unload', function ()
 		{
@@ -91,23 +96,26 @@ Ext.ux.HashListener = Ext.extend(Ext.util.Observable, {
 		var hash = this.getHash();
 		var doc;
 		
-		this.iframe = Ext.DomHelper(document.body, {
+		this.iframe = Ext.DomHelper.append(document.body, {
 			'tag': 'iframe',
 			'src': this.options.blank_page,
-			'styles': { 
+			'scrolling': '0',
+			'frameborder': '0',
+			'width': '0',
+			'height': '0',
+			'styles': {
 				'position': 'absolute',
 				'top': 0,
 				'left': 0,
-				'width': '1px',
-				'height': '1px',
-				'visibility': 'hidden'
+				'border': '0px none',
+				'width': '0px',
+				'height': '0px',
+				'visibility': 'hidden',
+				'display': 'none'
 			}
 		});
 		
-		doc = (this.iframe.contentDocument) ? this.iframe.contentDocument : this.iframe.contentWindow.document;
-		doc.open();
-		doc.write('<html><body id="state">' + hash + '</body></html>');
-		doc.close();
+		this.setIframeHash(hash);
 		return;
 	},
 	
@@ -122,17 +130,28 @@ Ext.ux.HashListener = Ext.extend(Ext.util.Observable, {
 			this.ignoreLocationChange = false;
 			return;
 		}
-
+		
 		if (this.useIframe)
 		{
 			doc = (this.iframe.contentDocument) ? this.iframe.contentDocumnet  : this.iframe.contentWindow.document;
-			ie_state = doc.body.innerHTML;
+			
+			if (doc.body.id != this.options.iframe_body_id)
+			{
+				ie_state = '';
+				// reset
+				this.iframe.src = this.options.blank_page;
+				this.setIframeHash('');
+			}
+			else
+			{
+				ie_state = doc.body.innerHTML;
+			}
 			
 			if (ie_state != hash)
 			{
 				this.setHash(ie_state);
 				hash = ie_state;
-			} 
+			}
 		}
 		
 		if (this.currentLocation == hash)
@@ -144,7 +163,7 @@ Ext.ux.HashListener = Ext.extend(Ext.util.Observable, {
 		
 		this.fireEvent('hashChanged', hash);
 	},
-	
+
 	setHash : function (newHash)
 	{
 		window.location.hash = this.currentLocation = newHash;
@@ -156,7 +175,7 @@ Ext.ux.HashListener = Ext.extend(Ext.util.Observable, {
 		
 		this.fireEvent('hashChanged', newHash);
 	},
-	
+
 	getHash : function ()
 	{
 		var m;
@@ -174,16 +193,16 @@ Ext.ux.HashListener = Ext.extend(Ext.util.Observable, {
 			return window.location.hash.substr(1);
 		}
 	},
-	
+
 	setIframeHash: function (newHash)
 	{
 		var doc = (this.iframe.contentDocument) ? this.iframe.contentDocumnet : this.iframe.contentWindow.document;
 		doc.open();
-		doc.write('<html><body id="state">' + newHash + '</body></html>');
+		doc.write('<html><body id="' + this.options.iframe_body_id + '">' + newHash + '</body></html>');
 		doc.close();
-		
+		return;
 	},
-	
+
 	updateHash : function (newHash)
 	{
 		if (Ext.get(newHash))
@@ -206,13 +225,13 @@ Ext.ux.HashListener = Ext.extend(Ext.util.Observable, {
 			this.setHash(newHash);
 		}
 	},
-	
+
 	start : function()
 	{
 		this.handle = setInterval(this.checkHash.createDelegate(this), 100);
 		this.fireEvent.defer(110, this, ['started']);
 	},
-	
+
 	stop : function()
 	{
 		clearInterval(this.handle);
