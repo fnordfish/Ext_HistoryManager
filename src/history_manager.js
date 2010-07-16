@@ -20,10 +20,10 @@ provides: [Ext.ux.HistoryManager, Ext.ux.HistoryManager.SimpleMap]
 Ext.ns('Ext.ux');
 
 Ext.ux.HistoryManager = (function (){
-	
+
 	/*
 	 * A simple Object-Map, which does not soffer from reserved key-names
-	 * 
+	 *
 	 * thanks for no working way of extending an Object or Function
 	 */
 	var SimpleMap = function (obj, opts) {
@@ -41,7 +41,7 @@ Ext.ux.HistoryManager = (function (){
 				this.put(k, obj[k]);
 			}
 		}
-
+		
 		if (opts)
 		{
 			Ext.apply(this.options, opts);
@@ -52,7 +52,7 @@ Ext.ux.HistoryManager = (function (){
 		this.prefixKey = function (key)
 		{
 			return this.options.prefix + key;
-		},
+		};
 
 		this.unPrefixKey = function (key)
 		{
@@ -61,8 +61,7 @@ Ext.ux.HistoryManager = (function (){
 				return key.substr(this.prefixLength);
 			}
 			return false;
-		}
-
+		};
 
 		this.put = function (key, value)
 		{
@@ -126,14 +125,14 @@ Ext.ux.HistoryManager = (function (){
 			return newMap;
 		};
 	};
-	
+
 	var HistoryManager = Ext.extend(Ext.ux.HashListener, {
 
 		options : {
 			delimiter : '',
 			serializeHash: null,
 			deserializeHash: null
-		}, 
+		},
 
 		state : new SimpleMap(),
 		stateCache : new SimpleMap(),
@@ -173,7 +172,7 @@ Ext.ux.HistoryManager = (function (){
 			{
 				h.put(k, o[k]);
 			}
-			return h; 
+			return h;
 		},
 
 
@@ -247,17 +246,16 @@ Ext.ux.HistoryManager = (function (){
 		remove : function (key)
 		{
 			var newState = this.state.clone();
-			
+
 			newState.remove(key);
-			
+
 			this.updateHash(this.options.delimiter + this.serializeHash(newState));
-			
+
 			return this;
 		}
 	});
-	
+
 	HistoryManager.SimpleMap = SimpleMap;
 
 	return HistoryManager;
 })();
-
