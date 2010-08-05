@@ -126,13 +126,15 @@ Ext.ux.HistoryManager = (function (){
 		};
 	};
 
+
+	var HistoryManager_options = {
+		delimiter : '',
+		serializeHash: null,
+		deserializeHash: null
+	};
 	var HistoryManager = Ext.extend(Ext.ux.HashListener, {
 
-		options : {
-			delimiter : '',
-			serializeHash: null,
-			deserializeHash: null
-		},
+		options : {},
 
 		state : new SimpleMap(),
 		stateCache : new SimpleMap(),
@@ -140,8 +142,9 @@ Ext.ux.HistoryManager = (function (){
 
 		constructor: function (options)
 		{
+			Ext.apply(this.options, options, HistoryManager_options);
 			Ext.ux.HistoryManager.superclass.constructor.call(this, options);
-			Ext.apply(this.options, options);
+			
 			if (null !== this.options.deserializeHash && null !== this.options.serializeHash)
 			{
 				this.serializeHash = this.options.serializeHash;
